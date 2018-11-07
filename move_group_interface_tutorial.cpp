@@ -47,7 +47,9 @@
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "move_group_interface_tutorial");
+  //////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////// move_group_interface_tutorial을 그대로 써도 되는 지 뭐로 바꿔야 되는 지 잘 모르겠음.  //////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
   ros::NodeHandle node_handle;
   ros::AsyncSpinner spinner(1);
   spinner.start();
@@ -60,6 +62,9 @@ int main(int argc, char** argv)
   // MoveIt! operates on sets of joints called "planning groups" and stores them in an object called
   // the `JointModelGroup`. Throughout MoveIt! the terms "planning group" and "joint model group"
   // are used interchangably.
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////// 내 모델의 planning group (MoveIt 내부에서) 이름은 그냥 arm으로 설정해놨음.   ////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   static const std::string PLANNING_GROUP = "arm";
 
   // The :move_group_interface:`MoveGroup` class can be easily
@@ -79,6 +84,10 @@ int main(int argc, char** argv)
   //
   // The package MoveItVisualTools provides many capabilties for visualizing objects, robots,
   // and trajectories in RViz as well as debugging tools such as step-by-step introspection of a script
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////// 패키지 MoveItVisualTools가 설치되어있는 지 잘 모르겠음. 확인해봐야할 듯.
+  //////// panda_link0을 내꺼로 변경해줘야 함
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   namespace rvt = rviz_visual_tools;
   moveit_visual_tools::MoveItVisualTools visual_tools("panda_link0");
   visual_tools.deleteAllMarkers();
@@ -99,9 +108,15 @@ int main(int argc, char** argv)
   // ^^^^^^^^^^^^^^^^^^^^^^^^^
   //
   // We can print the name of the reference frame for this robot.
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////// Planning frame 이름 출력
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ROS_INFO_NAMED("tutorial", "Planning frame: %s", move_group.getPlanningFrame().c_str());
 
   // We can also print the name of the end-effector link for this group.
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////// End effector의 이름 출력
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ROS_INFO_NAMED("tutorial", "End effector link: %s", move_group.getEndEffectorLink().c_str());
 
   // We can get a list of all the groups in the robot:
@@ -154,8 +169,15 @@ int main(int argc, char** argv)
   // a blocking function and requires a controller to be active
   // and report success on execution of a trajectory.
 
+  
+  
+  /////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////// 실제 로봇이랑 할 때는 밑에꺼 주석 없애기 ////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////
   /* Uncomment below line when working with a real robot */
-  /* move_group.move(); */
+  move_group.move(); 
 
   // Planning to a joint-space goal
   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -191,6 +213,9 @@ int main(int argc, char** argv)
   // Path constraints can easily be specified for a link on the robot.
   // Let's specify a path constraint and a pose goal for our group.
   // First define the path constraint.
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////// link_name & frame_id 변경해주기. //////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   moveit_msgs::OrientationConstraint ocm;
   ocm.link_name = "panda_link7";
   ocm.header.frame_id = "panda_link0";
@@ -247,6 +272,7 @@ int main(int argc, char** argv)
   // for the end-effector to go through. Note that we are starting
   // from the new start state above.  The initial pose (start state) does not
   // need to be added to the waypoint list but adding it can help with visualizations
+  // push_back()함수 : 벡터의 맨 마지막에 괄호 안의 값을 대입.
   std::vector<geometry_msgs::Pose> waypoints;
   waypoints.push_back(start_pose2);
 
@@ -266,6 +292,8 @@ int main(int argc, char** argv)
   // Cartesian motions are frequently needed to be slower for actions such as approach and retreat
   // grasp motions. Here we demonstrate how to reduce the speed of the robot arm via a scaling factor
   // of the maxiumum speed of each joint. Note this is not the speed of the end effector point.
+  // Cartesian motion은 주로 움직임 속도를 늦춰줘야 할 필요가 있음. approaching이나 grasping 같은 동작인 경우 같이.
+  // scaling factor를 통해서 각 조인트의 최대속도를 조절해줄 수 있음.
   move_group.setMaxVelocityScalingFactor(0.1);
 
   // We want the Cartesian path to be interpolated at a resolution of 1 cm
@@ -273,6 +301,9 @@ int main(int argc, char** argv)
   // translation.  We will specify the jump threshold as 0.0, effectively disabling it.
   // Warning - disabling the jump threshold while operating real hardware can cause
   // large unpredictable motions of redundant joints and could be a safety issue
+  // Cartesian 경로를 1cm의 resolution으로 interpolate 해주기 위해서 max step (eef_step)을 0.01로 설정.
+  // jump threshold를 0.0으로 해줌으로써 이거를 disable 해버림.
+  // 주의: 실제 하드웨어를 동작 중에 jump threshold를 disable해버리면 redundant 조인트의 예상치 못한 큰 움직임이 발생 가능. 
   moveit_msgs::RobotTrajectory trajectory;
   const double jump_threshold = 0.0;
   const double eef_step = 0.01;
@@ -292,6 +323,7 @@ int main(int argc, char** argv)
   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   //
   // Define a collision object ROS message.
+  // Collision object가 뭔지 정확히는 잘 모르겠음
   moveit_msgs::CollisionObject collision_object;
   collision_object.header.frame_id = move_group.getPlanningFrame();
 
