@@ -86,10 +86,10 @@ int main(int argc, char** argv)
   // and trajectories in RViz as well as debugging tools such as step-by-step introspection of a script
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////// 패키지 MoveItVisualTools가 설치되어있는 지 잘 모르겠음. 확인해봐야할 듯.
-  //////// panda_link0을 내꺼로 변경해줘야 함
+  //////// panda_link0을 내꺼로 변경해줘야 함 --> base_link_to_link1 ////////
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   namespace rvt = rviz_visual_tools;
-  moveit_visual_tools::MoveItVisualTools visual_tools("panda_link0");
+  moveit_visual_tools::MoveItVisualTools visual_tools("base_link_to_link1");
   visual_tools.deleteAllMarkers();
 
   // Remote control is an introspection tool that allows users to step through a high level script
@@ -215,10 +215,12 @@ int main(int argc, char** argv)
   // First define the path constraint.
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////// link_name & frame_id 변경해주기. //////////////////////
+  //////////////// link_name : panda_link7 -> link7 /////////////////////
+  //////////////// frame_id : panda_link0 -> base_link_to_link1 //////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   moveit_msgs::OrientationConstraint ocm;
-  ocm.link_name = "panda_link7";
-  ocm.header.frame_id = "panda_link0";
+  ocm.link_name = "link7";
+  ocm.header.frame_id = "base_link_to_link1";
   ocm.orientation.w = 1.0;
   ocm.absolute_x_axis_tolerance = 0.1;
   ocm.absolute_y_axis_tolerance = 0.1;
